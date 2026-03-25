@@ -37,7 +37,7 @@
 </head>
 <body class="h-screen w-screen flex flex-col relative">
 
-    <div id="host-view" class="hidden h-full w-full flex-col items-center justify-center relative p-4">
+    <div id="host-view" style="display: none;" class="h-full w-full flex-col items-center justify-center relative p-4">
         
         <header class="w-full max-w-5xl flex justify-between items-center mb-4 z-40">
             <div>
@@ -63,7 +63,7 @@
             </div>
         </header>
 
-        <canvas id="game-canvas" width="800" height="600" class="hidden"></canvas>
+        <canvas id="game-canvas" width="800" height="600" style="display: none;"></canvas>
 
         <div id="mode-selector" class="absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center">
             <div class="bg-slate-900 border-2 border-cyan-500 p-10 rounded-[2rem] shadow-[0_0_50px_rgba(6,182,212,0.3)] text-center max-w-2xl w-full">
@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        <div id="difficulty-selector" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-[55] items-center justify-center">
+        <div id="difficulty-selector" style="display: none;" class="absolute inset-0 bg-black/90 backdrop-blur-md z-[55] flex items-center justify-center">
             <div class="bg-slate-900 border-2 border-rose-500 p-10 rounded-[2rem] shadow-[0_0_50px_rgba(244,63,94,0.3)] text-center max-w-2xl w-full">
                 <h1 class="title-font font-black text-5xl text-rose-400 mb-8">DIFICULDADE DA MÁQUINA</h1>
                 <div class="flex gap-4">
@@ -90,13 +90,13 @@
             </div>
         </div>
 
-        <div id="lobby-overlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-50 items-center justify-center">
+        <div id="lobby-overlay" style="display: none;" class="absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center">
             <div class="bg-slate-900 border-2 border-cyan-500 p-8 rounded-3xl shadow-[0_0_50px_rgba(6,182,212,0.3)] text-center max-w-2xl w-full flex flex-col items-center">
                 <h1 class="title-font font-black text-6xl text-cyan-400 mb-2">SALA: <span id="room-pin" class="text-white">...</span></h1>
                 <p id="lobby-msg" class="text-indigo-200 text-xl mb-6 font-bold uppercase tracking-widest">Escaneie para controlar sua cobra!</p>
                 
                 <div class="bg-white p-4 rounded-xl mb-4" id="qrcode"></div>
-                <p class="text-sm text-slate-400 mb-6">(Dica: Pressione "1" ou "2" no teclado para simular a entrada no PC)</p>
+                <p class="text-sm text-slate-400 mb-6">(Pressione "1" ou "2" no teclado para simular entrada e jogar no PC)</p>
                 
                 <div class="flex gap-4 w-full justify-center mb-8" id="lobby-players">
                     <div id="lobby-p1" class="bg-slate-800 p-6 rounded-xl text-center text-slate-500 font-bold border-2 border-slate-700 border-dashed w-48">Aguardando P1...</div>
@@ -109,7 +109,7 @@
             </div>
         </div>
         
-        <div id="game-over-overlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-[100] items-center justify-center">
+        <div id="game-over-overlay" style="display: none;" class="absolute inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center">
             <div class="bg-slate-900 border-4 border-yellow-400 p-10 rounded-3xl shadow-[0_0_50px_rgba(250,204,21,0.4)] text-center max-w-lg w-full" id="game-over-box">
                 <h2 class="title-font font-black text-6xl mb-6 text-yellow-400 animate-bounce">FIM DE JOGO!</h2>
                 <div id="go-msg" class="text-3xl mb-10 text-white font-bold title-font"></div>
@@ -119,7 +119,7 @@
     </div>
 
 
-    <div id="mobile-view" class="hidden h-full w-full flex-col z-50 bg-slate-900 relative">
+    <div id="mobile-view" style="display: none;" class="h-full w-full flex-col z-50 bg-slate-900 relative">
         <div id="mobile-join" class="flex-1 flex flex-col items-center justify-center p-6">
             <h1 class="title-font text-5xl text-cyan-400 font-black mb-10 text-center drop-shadow-lg">GEOPA SNAKE</h1>
             <div class="flex flex-col gap-6 w-full max-w-xs" id="mobile-buttons-container">
@@ -132,7 +132,7 @@
             </div>
         </div>
 
-        <div id="mobile-controller" class="hidden flex-1 flex-col p-6 items-center justify-center bg-[#020617] relative">
+        <div id="mobile-controller" style="display: none;" class="flex-1 flex-col p-6 items-center justify-center bg-[#020617] relative">
             <div class="absolute top-6 left-6 text-xl font-bold tracking-widest title-font uppercase" id="mobile-player-name">Player</div>
             
             <div class="grid grid-cols-3 grid-rows-3 gap-4 w-full max-w-[350px] aspect-square">
@@ -148,7 +148,7 @@
             </div>
         </div>
         
-        <div id="mobile-dead" class="hidden absolute inset-0 bg-slate-950 flex-col items-center justify-center p-6 text-center z-50">
+        <div id="mobile-dead" style="display: none;" class="absolute inset-0 bg-slate-950 flex-col items-center justify-center p-6 text-center z-50">
             <div class="text-[6rem] mb-4">☠️</div>
             <h1 class="title-font text-5xl text-white font-black mb-2">DEVORADO!</h1>
             <p class="text-xl text-cyan-200 font-bold mt-4">Olhe para o telão!</p>
@@ -157,18 +157,33 @@
 
 
     <script>
-        // ======= SETUP FIREBASE =======
-        const firebaseConfig = {
-            apiKey: "AIzaSyCo98AZSav7hzbSb-l7jZ9cZbk2dGKQ07c",
-            authDomain: "mathbubble-4b497.firebaseapp.com",
-            databaseURL: "https://mathbubble-4b497-default-rtdb.firebaseio.com",
-            projectId: "mathbubble-4b497",
-            storageBucket: "mathbubble-4b497.firebaseestorage.app",
-            messagingSenderId: "228365496078",
-            appId: "1:228365496078:web:aa2a5001e454a26082b15f"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        // ======= PROTEÇÃO OFFLINE / FIREBASE BLINDADO =======
+        let database = null;
+        let isOffline = false;
+
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyCo98AZSav7hzbSb-l7jZ9cZbk2dGKQ07c",
+                authDomain: "mathbubble-4b497.firebaseapp.com",
+                databaseURL: "https://mathbubble-4b497-default-rtdb.firebaseio.com",
+                projectId: "mathbubble-4b497",
+                storageBucket: "mathbubble-4b497.firebaseestorage.app",
+                messagingSenderId: "228365496078",
+                appId: "1:228365496078:web:aa2a5001e454a26082b15f"
+            };
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+        } catch (error) {
+            console.warn("Sem internet ou Firebase bloqueado. MODO OFFLINE ATIVADO.");
+            isOffline = true;
+            // Banco de dados falso para o código não travar se estiver sem internet
+            const dummyRef = {
+                on: () => {}, once: () => Promise.resolve({val: () => null}),
+                set: () => Promise.resolve(), update: () => Promise.resolve(),
+                child: function() { return this; }
+            };
+            database = { ref: () => dummyRef };
+        }
 
         const urlParams = new URLSearchParams(window.location.search);
         const roomURL = urlParams.get('sala');
@@ -181,7 +196,7 @@
         }
 
         // ==========================================
-        // LÓGICA DO HOST (TELÃO E INTELIGÊNCIA ARTIFICIAL)
+        // LÓGICA DO HOST (TELÃO)
         // ==========================================
         
         const canvas = document.getElementById('game-canvas');
@@ -195,95 +210,103 @@
         let gameMode = 'pvp';
         let botDifficulty = 'facil';
         let globalRoomRef = null;
+        
+        let p1Ready = false;
+        let p2Ready = false;
 
         function initHost() {
-            document.getElementById('host-view').classList.remove('hidden');
-            document.getElementById('host-view').classList.add('flex');
+            document.getElementById('host-view').style.display = 'flex';
         }
 
         function showDifficulty() {
-            document.getElementById('mode-selector').classList.add('hidden');
-            document.getElementById('mode-selector').classList.remove('flex');
-            document.getElementById('difficulty-selector').classList.remove('hidden');
-            document.getElementById('difficulty-selector').classList.add('flex');
+            document.getElementById('mode-selector').style.display = 'none';
+            document.getElementById('difficulty-selector').style.display = 'flex';
+        }
+
+        function setPlayerReady(playerNum) {
+            if (playerNum === 1) {
+                p1Ready = true;
+                document.getElementById('lobby-p1').innerHTML = `<div class="text-4xl mb-2">🔵</div><div class="text-cyan-400">Azul Pronto</div>`;
+                document.getElementById('lobby-p1').classList.add('border-cyan-500');
+            } else if (playerNum === 2) {
+                p2Ready = true;
+                document.getElementById('lobby-p2').innerHTML = `<div class="text-4xl mb-2">🔴</div><div class="text-rose-400">Vermelha Pronta</div>`;
+                document.getElementById('lobby-p2').classList.add('border-rose-500');
+            }
+
+            const btnStart = document.getElementById('btn-start-game');
+            if (p1Ready && p2Ready) {
+                btnStart.disabled = false;
+                btnStart.innerText = "INICIAR BATALHA!";
+                btnStart.classList.add('animate-pulse');
+            }
         }
 
         function selectMode(mode, diff = 'facil') {
             gameMode = mode;
             botDifficulty = diff;
 
-            document.getElementById('mode-selector').classList.add('hidden');
-            document.getElementById('mode-selector').classList.remove('flex');
-            document.getElementById('difficulty-selector').classList.add('hidden');
-            document.getElementById('difficulty-selector').classList.remove('flex');
-            
-            document.getElementById('lobby-overlay').classList.remove('hidden');
-            document.getElementById('lobby-overlay').classList.add('flex');
+            document.getElementById('mode-selector').style.display = 'none';
+            document.getElementById('difficulty-selector').style.display = 'none';
+            document.getElementById('lobby-overlay').style.display = 'flex';
 
             const roomPin = Math.floor(1000 + Math.random() * 9000).toString();
             document.getElementById('room-pin').innerText = roomPin;
             
             const joinUrl = window.location.href.split('?')[0] + "?sala=" + roomPin;
-            new QRCode(document.getElementById("qrcode"), { text: joinUrl, width: 200, height: 200, colorDark: "#0891b2", colorLight: "#ffffff" });
+            
+            if (isOffline) {
+                document.getElementById('qrcode').innerHTML = '<div class="text-rose-500 font-bold text-xl py-4">SISTEMA OFFLINE</div>';
+                document.getElementById('lobby-msg').innerText = "Modo Local: Use as teclas W A S D e as Setas!";
+            } else {
+                new QRCode(document.getElementById("qrcode"), { text: joinUrl, width: 200, height: 200, colorDark: "#0891b2", colorLight: "#ffffff" });
+            }
 
             globalRoomRef = database.ref('fuga_salas/' + roomPin);
             globalRoomRef.set({ status: 'lobby', mode: gameMode, timestamp: Date.now() });
 
-            let p1Ready = false;
-            let p2Ready = false;
-
             if(gameMode === 'pve') {
                 document.getElementById('mode-display').innerText = `VS MÁQUINA (${botDifficulty.toUpperCase()})`;
-                document.getElementById('lobby-msg').innerText = "Você será a Cobra Azul. Escaneie!";
-                document.getElementById('lobby-p2').innerHTML = `<div class="text-4xl mb-2">🤖</div><div class="text-rose-400">Máquina Pronta</div>`;
-                document.getElementById('lobby-p2').classList.add('border-rose-500');
-                p2Ready = true; // Máquina sempre pronta
+                setPlayerReady(2); // Máquina sempre pronta
             }
 
-            // ATALHOS DE TECLADO NO LOBBY PARA ENTRADA FÁCIL NO PC
-            document.addEventListener('keydown', (e) => {
-                if (globalRoomRef && document.getElementById('lobby-overlay').classList.contains('flex')) {
-                    if (e.key === '1' && !p1Ready) globalRoomRef.child('jogadores/0').set({ active: true, direction: 'RIGHT' });
-                    if (e.key === '2' && !p2Ready && gameMode === 'pvp') globalRoomRef.child('jogadores/1').set({ active: true, direction: 'LEFT' });
-                }
-            });
-            
-            globalRoomRef.child('jogadores').on('value', (snap) => {
-                const data = snap.val() || {};
-                
-                if (data[0]) {
-                    p1Ready = true;
-                    document.getElementById('lobby-p1').innerHTML = `<div class="text-4xl mb-2">🔵</div><div class="text-cyan-400">Azul Pronto</div>`;
-                    document.getElementById('lobby-p1').classList.add('border-cyan-500');
-                }
-                if (data[1] && gameMode === 'pvp') {
-                    p2Ready = true;
-                    document.getElementById('lobby-p2').innerHTML = `<div class="text-4xl mb-2">🔴</div><div class="text-rose-400">Vermelho Pronto</div>`;
-                    document.getElementById('lobby-p2').classList.add('border-rose-500');
-                }
-
-                const btnStart = document.getElementById('btn-start-game');
-                if (p1Ready && p2Ready) {
-                    btnStart.disabled = false;
-                    btnStart.innerText = "INICIAR BATALHA!";
-                    btnStart.classList.add('animate-pulse');
-                }
-            });
+            // Escuta celulares apenas se estiver online
+            if (!isOffline) {
+                globalRoomRef.child('jogadores').on('value', (snap) => {
+                    const data = snap.val() || {};
+                    if (data[0]) setPlayerReady(1);
+                    if (data[1] && gameMode === 'pvp') setPlayerReady(2);
+                });
+            }
 
             document.getElementById('btn-start-game').addEventListener('click', () => {
-                document.getElementById('lobby-overlay').classList.add('hidden');
-                document.getElementById('lobby-overlay').classList.remove('flex');
-                document.getElementById('game-canvas').classList.remove('hidden');
+                document.getElementById('lobby-overlay').style.display = 'none';
+                document.getElementById('game-canvas').style.display = 'block';
                 globalRoomRef.update({ status: 'playing' });
                 startSnakeGame();
             });
         }
 
+        // Atalhos de teclado no Lobby (Garante o funcionamento Offline)
+        document.addEventListener('keydown', (e) => {
+            const lobbyOverlay = document.getElementById('lobby-overlay');
+            if (lobbyOverlay && lobbyOverlay.style.display === 'flex') {
+                if (e.key === '1' && !p1Ready) {
+                    setPlayerReady(1);
+                    globalRoomRef.child('jogadores/0').set({ active: true, direction: 'RIGHT' });
+                }
+                if (e.key === '2' && !p2Ready && gameMode === 'pvp') {
+                    setPlayerReady(2);
+                    globalRoomRef.child('jogadores/1').set({ active: true, direction: 'LEFT' });
+                }
+            }
+        });
+
         function spawnFood() {
             food = { x: Math.floor(Math.random() * TILE_COUNT_X), y: Math.floor(Math.random() * TILE_COUNT_Y) };
         }
 
-        // ================= CÉREBRO DA MÁQUINA =================
+        // Inteligência da Máquina
         function updateBotAI() {
             if (gameMode !== 'pve') return;
 
@@ -337,12 +360,14 @@
             
             spawnFood();
 
-            globalRoomRef.child('jogadores/0/direction').on('value', snap => { if(snap.val()) s1.nextDir = snap.val(); });
-            if (gameMode === 'pvp') {
-                globalRoomRef.child('jogadores/1/direction').on('value', snap => { if(snap.val()) s2.nextDir = snap.val(); });
+            if (!isOffline) {
+                globalRoomRef.child('jogadores/0/direction').on('value', snap => { if(snap.val()) s1.nextDir = snap.val(); });
+                if (gameMode === 'pvp') {
+                    globalRoomRef.child('jogadores/1/direction').on('value', snap => { if(snap.val()) s2.nextDir = snap.val(); });
+                }
             }
 
-            // ATALHOS DE TECLADO PARA MOVIMENTO NO PC
+            // ATALHOS DE TECLADO
             document.addEventListener('keydown', (e) => {
                 if(e.key === 'w' || e.key === 'W') s1.nextDir = 'UP';
                 if(e.key === 's' || e.key === 'S') s1.nextDir = 'DOWN';
@@ -381,10 +406,8 @@
             let h2 = {x: s2.body[0].x, y: s2.body[0].y};
             if(s2.dir === 'UP') h2.y--; if(s2.dir === 'DOWN') h2.y++; if(s2.dir === 'LEFT') h2.x--; if(s2.dir === 'RIGHT') h2.x++;
 
-            // Wrap-around
             if(h1.x < 0) h1.x = TILE_COUNT_X - 1; if(h1.x >= TILE_COUNT_X) h1.x = 0;
             if(h1.y < 0) h1.y = TILE_COUNT_Y - 1; if(h1.y >= TILE_COUNT_Y) h1.y = 0;
-            
             if(h2.x < 0) h2.x = TILE_COUNT_X - 1; if(h2.x >= TILE_COUNT_X) h2.x = 0;
             if(h2.y < 0) h2.y = TILE_COUNT_Y - 1; if(h2.y >= TILE_COUNT_Y) h2.y = 0;
 
@@ -411,7 +434,6 @@
                 if (s1.body.length > s2.body.length) { s2.body.pop(); s1Ate = true; } 
                 else { return endGameHost(gameMode === 'pve' ? "A MÁQUINA VENCEU!" : "VERMELHA VENCEU!"); }
             }
-
             if (s2HitS1) {
                 if (s2.body.length > s1.body.length) { s1.body.pop(); s2Ate = true; } 
                 else { return endGameHost("AZUL VENCEU!"); }
@@ -448,9 +470,7 @@
             clearInterval(gameLoopId);
             globalRoomRef.update({ status: 'gameover' });
             
-            document.getElementById('game-over-overlay').classList.remove('hidden');
-            document.getElementById('game-over-overlay').classList.add('flex');
-            
+            document.getElementById('game-over-overlay').style.display = 'flex';
             let color = msg.includes("AZUL") ? "text-cyan-400" : (msg.includes("MÁQUINA") || msg.includes("VERM") ? "text-rose-400" : "text-yellow-400");
             document.getElementById('go-msg').innerHTML = `<span class="${color}">${msg}</span>`;
         }
@@ -461,48 +481,52 @@
         let myPlayerId = null; let myRoomRef = null;
 
         function initMobile(pin) {
-            document.getElementById('mobile-view').classList.remove('hidden');
-            document.getElementById('mobile-view').classList.add('flex');
+            document.getElementById('mobile-view').style.display = 'flex';
             myRoomRef = database.ref('fuga_salas/' + pin);
 
-            myRoomRef.child('mode').once('value', snap => {
-                if (snap.val() === 'pve') {
-                    document.getElementById('btn-join-1').classList.add('hidden');
-                }
-            });
+            if (!isOffline) {
+                myRoomRef.child('mode').once('value', snap => {
+                    if (snap.val() === 'pve') document.getElementById('btn-join-1').style.display = 'none';
+                });
 
-            myRoomRef.child('jogadores').on('value', snap => {
-                const data = snap.val() || {};
-                if(data[0]) { document.getElementById('btn-join-0').classList.add('opacity-30', 'pointer-events-none'); document.getElementById('btn-join-0').innerText = 'EM USO'; }
-                if(data[1]) { document.getElementById('btn-join-1').classList.add('opacity-30', 'pointer-events-none'); document.getElementById('btn-join-1').innerText = 'EM USO'; }
-            });
+                myRoomRef.child('jogadores').on('value', snap => {
+                    const data = snap.val() || {};
+                    if(data[0]) { document.getElementById('btn-join-0').classList.add('opacity-30', 'pointer-events-none'); document.getElementById('btn-join-0').innerText = 'EM USO'; }
+                    if(data[1]) { document.getElementById('btn-join-1').classList.add('opacity-30', 'pointer-events-none'); document.getElementById('btn-join-1').innerText = 'EM USO'; }
+                });
+            }
         }
 
+        // Disparado pelo onclick do botão HTML
         function joinGame(id, name, themeClass) {
             myPlayerId = id;
-            myRoomRef.child('jogadores/' + id).set({ active: true, direction: (id === 0 ? 'RIGHT' : 'LEFT') });
             
-            document.getElementById('mobile-join').classList.remove('flex');
-            document.getElementById('mobile-join').classList.add('hidden');
+            if (!isOffline) {
+                myRoomRef.child('jogadores/' + id).set({ active: true, direction: (id === 0 ? 'RIGHT' : 'LEFT') });
+            }
             
-            const controller = document.getElementById('mobile-controller');
-            controller.classList.remove('hidden'); controller.classList.add('flex', themeClass);
+            // Garantia Absoluta: Troca a interface visual instantaneamente!
+            document.getElementById('mobile-join').style.display = 'none';
+            document.getElementById('mobile-controller').style.display = 'flex';
+            document.getElementById('mobile-controller').classList.add(themeClass);
             
             document.getElementById('mobile-player-name').innerText = "COBRA " + name;
             if (id === 0) document.getElementById('mobile-player-name').classList.add('text-cyan-400');
             else document.getElementById('mobile-player-name').classList.add('text-rose-400');
 
-            myRoomRef.child('status').on('value', snap => {
-                if (snap.val() === 'gameover') {
-                    controller.classList.add('hidden'); controller.classList.remove('flex');
-                    document.getElementById('mobile-dead').classList.remove('hidden'); document.getElementById('mobile-dead').classList.add('flex');
-                    setTimeout(() => location.reload(), 8000); 
-                }
-            });
+            if (!isOffline) {
+                myRoomRef.child('status').on('value', snap => {
+                    if (snap.val() === 'gameover') {
+                        document.getElementById('mobile-controller').style.display = 'none';
+                        document.getElementById('mobile-dead').style.display = 'flex';
+                        setTimeout(() => location.reload(), 8000); 
+                    }
+                });
+            }
         }
 
         function sendDirection(dir) {
-            if (myPlayerId !== null && myRoomRef !== null) {
+            if (myPlayerId !== null && myRoomRef !== null && !isOffline) {
                 if(navigator.vibrate) navigator.vibrate(50);
                 myRoomRef.child('jogadores/' + myPlayerId).update({ direction: dir });
             }
