@@ -14,44 +14,25 @@
     
     <style>
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background: #020617;
-            color: white; overflow: hidden; user-select: none; margin: 0;
-            background-image: 
-                linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+            font-family: 'Rajdhani', sans-serif; background: #020617; color: white; overflow: hidden; user-select: none; margin: 0;
+            background-image: linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
             background-size: 40px 40px;
         }
         .title-font { font-family: 'Orbitron', sans-serif; }
 
-        /* Área do Canvas */
         #game-canvas {
-            background-color: rgba(15, 23, 42, 0.8);
-            border: 4px solid #38bdf8;
-            border-radius: 12px;
+            background-color: rgba(15, 23, 42, 0.8); border: 4px solid #38bdf8; border-radius: 12px;
             box-shadow: 0 0 40px rgba(56, 189, 248, 0.3), inset 0 0 50px rgba(0,0,0,0.8);
         }
 
-        /* Controles do Celular (D-PAD) */
         .dpad-btn {
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 3rem;
-            box-shadow: 0 10px 0 rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.1);
-            transition: all 0.1s;
+            background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); border-radius: 20px;
+            display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.1); transition: all 0.1s;
         }
-        .dpad-btn:active {
-            transform: translateY(10px);
-            box-shadow: 0 0px 0 rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.3);
-        }
-        
-        .p1-theme .dpad-btn { border-color: #38bdf8; color: #38bdf8; }
-        .p1-theme .dpad-btn:active { background: rgba(56, 189, 248, 0.2); }
-        .p2-theme .dpad-btn { border-color: #fb7185; color: #fb7185; }
-        .p2-theme .dpad-btn:active { background: rgba(251, 113, 133, 0.2); }
-
+        .dpad-btn:active { transform: translateY(10px); box-shadow: 0 0px 0 rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.3); }
+        .p1-theme .dpad-btn { border-color: #38bdf8; color: #38bdf8; } .p1-theme .dpad-btn:active { background: rgba(56, 189, 248, 0.2); }
+        .p2-theme .dpad-btn { border-color: #fb7185; color: #fb7185; } .p2-theme .dpad-btn:active { background: rgba(251, 113, 133, 0.2); }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col relative">
@@ -61,7 +42,7 @@
         <header class="w-full max-w-5xl flex justify-between items-center mb-4 z-40">
             <div>
                 <h1 class="title-font text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 drop-shadow-lg">GEOPA SNAKE</h1>
-                <p class="text-indigo-200 tracking-[0.2em] font-bold">BATALHA DE TAMANHOS</p>
+                <p id="mode-display" class="text-indigo-200 tracking-[0.2em] font-bold uppercase">BATALHA DE TAMANHOS</p>
             </div>
             
             <div class="flex gap-6">
@@ -82,12 +63,37 @@
             </div>
         </header>
 
-        <canvas id="game-canvas" width="800" height="600"></canvas>
+        <canvas id="game-canvas" width="800" height="600" class="hidden"></canvas>
 
-        <div id="lobby-overlay" class="absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center">
+        <div id="mode-selector" class="absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center">
+            <div class="bg-slate-900 border-2 border-cyan-500 p-10 rounded-[2rem] shadow-[0_0_50px_rgba(6,182,212,0.3)] text-center max-w-2xl w-full">
+                <h1 class="title-font font-black text-5xl text-cyan-400 mb-8">ESCOLHA O MODO</h1>
+                <div class="flex flex-col gap-6">
+                    <button onclick="selectMode('pvp')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white title-font font-black text-3xl py-6 rounded-2xl border border-indigo-400 active:scale-95 transition-all">
+                        🎮 2 JOGADORES (VS)
+                    </button>
+                    <button onclick="showDifficulty()" class="w-full bg-rose-600 hover:bg-rose-500 text-white title-font font-black text-3xl py-6 rounded-2xl border border-rose-400 active:scale-95 transition-all">
+                        🤖 1 JOGADOR (VS MÁQUINA)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="difficulty-selector" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-[55] flex items-center justify-center">
+            <div class="bg-slate-900 border-2 border-rose-500 p-10 rounded-[2rem] shadow-[0_0_50px_rgba(244,63,94,0.3)] text-center max-w-2xl w-full">
+                <h1 class="title-font font-black text-5xl text-rose-400 mb-8">DIFICULDADE DA MÁQUINA</h1>
+                <div class="flex gap-4">
+                    <button onclick="selectMode('pve', 'facil')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white title-font font-black text-2xl py-6 rounded-xl active:scale-95 transition-all">FÁCIL 🐢</button>
+                    <button onclick="selectMode('pve', 'medio')" class="flex-1 bg-yellow-500 hover:bg-yellow-400 text-white title-font font-black text-2xl py-6 rounded-xl active:scale-95 transition-all">MÉDIO 🐅</button>
+                    <button onclick="selectMode('pve', 'dificil')" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white title-font font-black text-2xl py-6 rounded-xl active:scale-95 transition-all">DIFÍCIL 🔥</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="lobby-overlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center">
             <div class="bg-slate-900 border-2 border-cyan-500 p-8 rounded-3xl shadow-[0_0_50px_rgba(6,182,212,0.3)] text-center max-w-2xl w-full flex flex-col items-center">
-                <h1 class="title-font font-black text-6xl text-cyan-400 mb-2 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">SALA: <span id="room-pin" class="text-white">...</span></h1>
-                <p class="text-indigo-200 text-xl mb-6 font-bold uppercase tracking-widest">Escaneie para controlar sua cobra!</p>
+                <h1 class="title-font font-black text-6xl text-cyan-400 mb-2">SALA: <span id="room-pin" class="text-white">...</span></h1>
+                <p id="lobby-msg" class="text-indigo-200 text-xl mb-6 font-bold uppercase tracking-widest">Escaneie para controlar sua cobra!</p>
                 
                 <div class="bg-white p-4 rounded-xl mb-8" id="qrcode"></div>
                 
@@ -113,34 +119,30 @@
 
 
     <div id="mobile-view" class="hidden h-full w-full flex-col z-50 bg-slate-900 relative">
-        
         <div id="mobile-join" class="flex-1 flex flex-col items-center justify-center p-6">
             <h1 class="title-font text-5xl text-cyan-400 font-black mb-10 text-center drop-shadow-lg">GEOPA SNAKE</h1>
-            <div class="flex flex-col gap-6 w-full max-w-xs">
-                <button id="btn-join-0" class="bg-cyan-600 text-white p-6 rounded-3xl title-font font-black text-3xl shadow-[0_8px_0_rgba(8,145,178,1)] border border-cyan-400 active:translate-y-[8px] active:shadow-none transition-all">
+            <div class="flex flex-col gap-6 w-full max-w-xs" id="mobile-buttons-container">
+                <button id="btn-join-0" onclick="joinGame(0, 'AZUL', 'p1-theme')" class="bg-cyan-600 text-white p-6 rounded-3xl title-font font-black text-3xl shadow-[0_8px_0_rgba(8,145,178,1)] border border-cyan-400 active:translate-y-[8px] active:shadow-none transition-all">
                     🔵 COBRA AZUL
                 </button>
-                <button id="btn-join-1" class="bg-rose-600 text-white p-6 rounded-3xl title-font font-black text-3xl shadow-[0_8px_0_rgba(225,29,72,1)] border border-rose-400 active:translate-y-[8px] active:shadow-none transition-all">
+                <button id="btn-join-1" onclick="joinGame(1, 'VERMELHA', 'p2-theme')" class="bg-rose-600 text-white p-6 rounded-3xl title-font font-black text-3xl shadow-[0_8px_0_rgba(225,29,72,1)] border border-rose-400 active:translate-y-[8px] active:shadow-none transition-all">
                     🔴 COBRA VERM.
                 </button>
             </div>
         </div>
 
         <div id="mobile-controller" class="hidden flex-1 flex-col p-6 items-center justify-center bg-[#020617] relative">
-            
             <div class="absolute top-6 left-6 text-xl font-bold tracking-widest title-font uppercase" id="mobile-player-name">Player</div>
             
             <div class="grid grid-cols-3 grid-rows-3 gap-4 w-full max-w-[350px] aspect-square">
                 <div></div>
-                <button class="dpad-btn" onmousedown="sendDirection('UP')" ontouchstart="sendDirection('UP')">▲</button>
+                <button class="dpad-btn" onmousedown="sendDirection('UP')" ontouchstart="sendDirection('UP'); event.preventDefault();">▲</button>
                 <div></div>
-                
-                <button class="dpad-btn" onmousedown="sendDirection('LEFT')" ontouchstart="sendDirection('LEFT')">◀</button>
-                <div class="flex items-center justify-center"><div class="w-8 h-8 rounded-full bg-white/20"></div></div>
-                <button class="dpad-btn" onmousedown="sendDirection('RIGHT')" ontouchstart="sendDirection('RIGHT')">▶</button>
-                
+                <button class="dpad-btn" onmousedown="sendDirection('LEFT')" ontouchstart="sendDirection('LEFT'); event.preventDefault();">◀</button>
+                <div class="flex items-center justify-center"><div class="w-10 h-10 rounded-full bg-white/10"></div></div>
+                <button class="dpad-btn" onmousedown="sendDirection('RIGHT')" ontouchstart="sendDirection('RIGHT'); event.preventDefault();">▶</button>
                 <div></div>
-                <button class="dpad-btn" onmousedown="sendDirection('DOWN')" ontouchstart="sendDirection('DOWN')">▼</button>
+                <button class="dpad-btn" onmousedown="sendDirection('DOWN')" ontouchstart="sendDirection('DOWN'); event.preventDefault();">▼</button>
                 <div></div>
             </div>
         </div>
@@ -167,7 +169,6 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // ======= IDENTIFICAÇÃO DE ROTA (URL) =======
         const urlParams = new URLSearchParams(window.location.search);
         const roomURL = urlParams.get('sala');
         const isHost = !roomURL;
@@ -179,35 +180,64 @@
         }
 
         // ==========================================
-        // LÓGICA DO HOST (TELÃO)
+        // LÓGICA DO HOST (TELÃO E INTELIGÊNCIA ARTIFICIAL)
         // ==========================================
         
-        // Configurações do Jogo da Cobrinha
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
         const GRID_SIZE = 20;
-        const TILE_COUNT_X = canvas.width / GRID_SIZE; // 40
-        const TILE_COUNT_Y = canvas.height / GRID_SIZE; // 30
+        const TILE_COUNT_X = canvas.width / GRID_SIZE; 
+        const TILE_COUNT_Y = canvas.height / GRID_SIZE; 
 
         let s1, s2, food;
         let gameLoopId;
+        let gameMode = 'pvp';
+        let botDifficulty = 'facil';
+        let globalRoomRef = null;
 
         function initHost() {
             document.getElementById('host-view').classList.remove('hidden');
             document.getElementById('host-view').classList.add('flex');
+            // Mantém os modais de seleção visíveis e oculta canvas inicialmente
+        }
+
+        function showDifficulty() {
+            document.getElementById('mode-selector').classList.add('hidden');
+            document.getElementById('difficulty-selector').classList.remove('hidden');
+            document.getElementById('difficulty-selector').classList.add('flex');
+        }
+
+        function selectMode(mode, diff = 'facil') {
+            gameMode = mode;
+            botDifficulty = diff;
+
+            document.getElementById('mode-selector').classList.add('hidden');
+            document.getElementById('difficulty-selector').classList.add('hidden');
+            document.getElementById('difficulty-selector').classList.remove('flex');
             
+            document.getElementById('lobby-overlay').classList.remove('hidden');
+            document.getElementById('lobby-overlay').classList.add('flex');
+
             const roomPin = Math.floor(1000 + Math.random() * 9000).toString();
             document.getElementById('room-pin').innerText = roomPin;
             
             const joinUrl = window.location.href.split('?')[0] + "?sala=" + roomPin;
             new QRCode(document.getElementById("qrcode"), { text: joinUrl, width: 200, height: 200, colorDark: "#0891b2", colorLight: "#ffffff" });
 
-            const roomRef = database.ref('fuga_salas/' + roomPin);
-            roomRef.set({ status: 'lobby', timestamp: Date.now() });
+            globalRoomRef = database.ref('fuga_salas/' + roomPin);
+            globalRoomRef.set({ status: 'lobby', mode: gameMode, timestamp: Date.now() });
 
-            let p1Ready = false, p2Ready = false;
+            if(gameMode === 'pve') {
+                document.getElementById('mode-display').innerText = `VS MÁQUINA (${botDifficulty.toUpperCase()})`;
+                document.getElementById('lobby-msg').innerText = "Você será a Cobra Azul. Escaneie!";
+                document.getElementById('lobby-p2').innerHTML = `<div class="text-4xl mb-2">🤖</div><div class="text-rose-400">Máquina Pronta</div>`;
+                document.getElementById('lobby-p2').classList.add('border-rose-500');
+            }
+
+            let p1Ready = false;
+            let p2Ready = (gameMode === 'pve');
             
-            roomRef.child('jogadores').on('value', (snap) => {
+            globalRoomRef.child('jogadores').on('value', (snap) => {
                 const data = snap.val() || {};
                 
                 if (data[0]) {
@@ -215,14 +245,13 @@
                     document.getElementById('lobby-p1').innerHTML = `<div class="text-4xl mb-2">🔵</div><div class="text-cyan-400">Azul Pronto</div>`;
                     document.getElementById('lobby-p1').classList.add('border-cyan-500');
                 }
-                if (data[1]) {
+                if (data[1] && gameMode === 'pvp') {
                     p2Ready = true;
                     document.getElementById('lobby-p2').innerHTML = `<div class="text-4xl mb-2">🔴</div><div class="text-rose-400">Vermelho Pronto</div>`;
                     document.getElementById('lobby-p2').classList.add('border-rose-500');
                 }
 
                 const btnStart = document.getElementById('btn-start-game');
-                // Se quiser testar sozinho, mude para (p1Ready || p2Ready)
                 if (p1Ready && p2Ready) {
                     btnStart.disabled = false;
                     btnStart.innerText = "INICIAR BATALHA!";
@@ -230,63 +259,91 @@
                 }
             });
 
-            // Teclas de atalho no Lobby para testes no PC
-            document.addEventListener('keydown', (e) => {
-                if (e.key === '1' && !p1Ready) roomRef.child('jogadores/0').set({ active: true, direction: 'RIGHT' });
-                if (e.key === '2' && !p2Ready) roomRef.child('jogadores/1').set({ active: true, direction: 'LEFT' });
-            });
-
             document.getElementById('btn-start-game').addEventListener('click', () => {
                 document.getElementById('lobby-overlay').classList.add('hidden');
-                roomRef.update({ status: 'playing' });
-                startSnakeGame(roomRef);
+                document.getElementById('game-canvas').classList.remove('hidden');
+                globalRoomRef.update({ status: 'playing' });
+                startSnakeGame();
             });
         }
 
         function spawnFood() {
-            food = {
-                x: Math.floor(Math.random() * TILE_COUNT_X),
-                y: Math.floor(Math.random() * TILE_COUNT_Y)
-            };
+            food = { x: Math.floor(Math.random() * TILE_COUNT_X), y: Math.floor(Math.random() * TILE_COUNT_Y) };
         }
 
-        function startSnakeGame(roomRef) {
-            // Estado Inicial das Cobras
+        // ================= CÉREBRO DA MÁQUINA =================
+        function updateBotAI() {
+            if (gameMode !== 'pve') return;
+
+            // Chance de erro baseada na dificuldade (humaniza o bot)
+            let mistakeChance = botDifficulty === 'facil' ? 0.4 : (botDifficulty === 'medio' ? 0.1 : 0);
+            if (Math.random() < mistakeChance) return; // Mantém a direção atual neste frame
+
+            let target = { x: food.x, y: food.y }; // Alvo padrão: Comida
+
+            // Lógica Difícil: Caçar o jogador se a máquina for maior!
+            if (botDifficulty === 'dificil' && s2.body.length > s1.body.length) {
+                target = { x: s1.body[0].x, y: s1.body[0].y }; 
+            }
+
+            let head = s2.body[0];
+            let possibleMoves = [
+                { dir: 'UP', x: head.x, y: head.y - 1 },
+                { dir: 'DOWN', x: head.x, y: head.y + 1 },
+                { dir: 'LEFT', x: head.x - 1, y: head.y },
+                { dir: 'RIGHT', x: head.x + 1, y: head.y }
+            ];
+
+            // Aplica Wrap-around nos movimentos possíveis para avaliação
+            possibleMoves.forEach(m => {
+                if(m.x < 0) m.x = TILE_COUNT_X - 1; if(m.x >= TILE_COUNT_X) m.x = 0;
+                if(m.y < 0) m.y = TILE_COUNT_Y - 1; if(m.y >= TILE_COUNT_Y) m.y = 0;
+            });
+
+            // Filtra movimentos suicidas (bater em si mesmo)
+            possibleMoves = possibleMoves.filter(m => !s2.body.some(p => p.x === m.x && p.y === m.y));
+            
+            // Filtra o "pescoço" (não pode voltar de ré)
+            possibleMoves = possibleMoves.filter(m => {
+                if (s2.dir === 'UP' && m.dir === 'DOWN') return false;
+                if (s2.dir === 'DOWN' && m.dir === 'UP') return false;
+                if (s2.dir === 'LEFT' && m.dir === 'RIGHT') return false;
+                if (s2.dir === 'RIGHT' && m.dir === 'LEFT') return false;
+                return true;
+            });
+
+            if (possibleMoves.length > 0) {
+                // Ordena os movimentos pela menor distância até o alvo (considerando o wrap-around da tela)
+                possibleMoves.sort((a, b) => {
+                    let distA = Math.min(Math.abs(a.x - target.x), TILE_COUNT_X - Math.abs(a.x - target.x)) +
+                                Math.min(Math.abs(a.y - target.y), TILE_COUNT_Y - Math.abs(a.y - target.y));
+                    let distB = Math.min(Math.abs(b.x - target.x), TILE_COUNT_X - Math.abs(b.x - target.x)) +
+                                Math.min(Math.abs(b.y - target.y), TILE_COUNT_Y - Math.abs(b.y - target.y));
+                    return distA - distB;
+                });
+                s2.nextDir = possibleMoves[0].dir;
+            }
+        }
+
+        function startSnakeGame() {
             s1 = { body: [{x: 5, y: 15}, {x: 4, y: 15}, {x: 3, y: 15}], dir: 'RIGHT', nextDir: 'RIGHT', colorHead: '#22d3ee', colorBody: '#0891b2' };
             s2 = { body: [{x: 34, y: 15}, {x: 35, y: 15}, {x: 36, y: 15}], dir: 'LEFT', nextDir: 'LEFT', colorHead: '#fb7185', colorBody: '#e11d48' };
             
             spawnFood();
 
-            // Escuta Comandos do Firebase
-            roomRef.child('jogadores/0/direction').on('value', snap => {
-                if(snap.val()) s1.nextDir = snap.val();
-            });
-            roomRef.child('jogadores/1/direction').on('value', snap => {
-                if(snap.val()) s2.nextDir = snap.val();
-            });
+            globalRoomRef.child('jogadores/0/direction').on('value', snap => { if(snap.val()) s1.nextDir = snap.val(); });
+            if (gameMode === 'pvp') {
+                globalRoomRef.child('jogadores/1/direction').on('value', snap => { if(snap.val()) s2.nextDir = snap.val(); });
+            }
 
-            // Comandos do Teclado para PC (Testes)
-            document.addEventListener('keydown', (e) => {
-                if(e.key === 'w') s1.nextDir = 'UP';
-                if(e.key === 's') s1.nextDir = 'DOWN';
-                if(e.key === 'a') s1.nextDir = 'LEFT';
-                if(e.key === 'd') s1.nextDir = 'RIGHT';
-
-                if(e.key === 'ArrowUp') s2.nextDir = 'UP';
-                if(e.key === 'ArrowDown') s2.nextDir = 'DOWN';
-                if(e.key === 'ArrowLeft') s2.nextDir = 'LEFT';
-                if(e.key === 'ArrowRight') s2.nextDir = 'RIGHT';
-            });
-
-            // Loop do Jogo (A cada 120ms)
             gameLoopId = setInterval(() => {
-                update(roomRef);
+                updateBotAI(); // Atualiza a máquina antes de mover
+                update();
                 draw();
             }, 120);
         }
 
-        function update(roomRef) {
-            // Previne 180 graus (suicídio instantâneo)
+        function update() {
             if(s1.nextDir === 'UP' && s1.dir !== 'DOWN') s1.dir = 'UP';
             if(s1.nextDir === 'DOWN' && s1.dir !== 'UP') s1.dir = 'DOWN';
             if(s1.nextDir === 'LEFT' && s1.dir !== 'RIGHT') s1.dir = 'LEFT';
@@ -297,14 +354,13 @@
             if(s2.nextDir === 'LEFT' && s2.dir !== 'RIGHT') s2.dir = 'LEFT';
             if(s2.nextDir === 'RIGHT' && s2.dir !== 'LEFT') s2.dir = 'RIGHT';
 
-            // Calcula Próxima Posição da Cabeça
             let h1 = {x: s1.body[0].x, y: s1.body[0].y};
             if(s1.dir === 'UP') h1.y--; if(s1.dir === 'DOWN') h1.y++; if(s1.dir === 'LEFT') h1.x--; if(s1.dir === 'RIGHT') h1.x++;
             
             let h2 = {x: s2.body[0].x, y: s2.body[0].y};
             if(s2.dir === 'UP') h2.y--; if(s2.dir === 'DOWN') h2.y++; if(s2.dir === 'LEFT') h2.x--; if(s2.dir === 'RIGHT') h2.x++;
 
-            // Atravessa as paredes
+            // Wrap-around
             if(h1.x < 0) h1.x = TILE_COUNT_X - 1; if(h1.x >= TILE_COUNT_X) h1.x = 0;
             if(h1.y < 0) h1.y = TILE_COUNT_Y - 1; if(h1.y >= TILE_COUNT_Y) h1.y = 0;
             
@@ -312,167 +368,118 @@
             if(h2.y < 0) h2.y = TILE_COUNT_Y - 1; if(h2.y >= TILE_COUNT_Y) h2.y = 0;
 
             let s1Ate = false, s2Ate = false;
-
-            // ================= LÓGICA DE COMIDA E BATALHA =================
             
-            // 1. Cobras comendo comida
             if(h1.x === food.x && h1.y === food.y) { s1Ate = true; spawnFood(); }
             if(h2.x === food.x && h2.y === food.y) { s2Ate = true; spawnFood(); }
 
-            // 2. Colisão de Cabeça com Cabeça
             if(h1.x === h2.x && h1.y === h2.y) {
-                if(s1.body.length > s2.body.length) return endGameHost("AZUL VENCEU!", roomRef);
-                if(s2.body.length > s1.body.length) return endGameHost("VERMELHA VENCEU!", roomRef);
-                return endGameHost("EMPATE FATAL!", roomRef);
+                if(s1.body.length > s2.body.length) return endGameHost("AZUL VENCEU!");
+                if(s2.body.length > s1.body.length) return endGameHost(gameMode === 'pve' ? "A MÁQUINA VENCEU!" : "VERMELHA VENCEU!");
+                return endGameHost("EMPATE FATAL!");
             }
 
-            // 3. Colisão Cabeça no Corpo (A Batalha de Tamanhos!)
             let s1HitS2 = s2.body.some(p => p.x === h1.x && p.y === h1.y);
             let s2HitS1 = s1.body.some(p => p.x === h2.x && p.y === h2.y);
             let s1HitSelf = s1.body.some(p => p.x === h1.x && p.y === h1.y);
             let s2HitSelf = s2.body.some(p => p.x === h2.x && p.y === h2.y);
 
-            // Suicídio
-            if (s1HitSelf) return endGameHost("VERMELHA VENCEU!", roomRef);
-            if (s2HitSelf) return endGameHost("AZUL VENCEU!", roomRef);
+            if (s1HitSelf) return endGameHost(gameMode === 'pve' ? "A MÁQUINA VENCEU!" : "VERMELHA VENCEU!");
+            if (s2HitSelf) return endGameHost("AZUL VENCEU!");
 
-            // S1 atacando S2
             if (s1HitS2) {
-                if (s1.body.length > s2.body.length) {
-                    s2.body.pop(); // S2 perde um pedaço
-                    s1Ate = true;  // S1 come o pedaço e cresce
-                } else {
-                    return endGameHost("VERMELHA VENCEU!", roomRef); // S1 tentou atacar sendo menor e morreu
-                }
+                if (s1.body.length > s2.body.length) { s2.body.pop(); s1Ate = true; } 
+                else { return endGameHost(gameMode === 'pve' ? "A MÁQUINA VENCEU!" : "VERMELHA VENCEU!"); }
             }
 
-            // S2 atacando S1
             if (s2HitS1) {
-                if (s2.body.length > s1.body.length) {
-                    s1.body.pop(); // S1 perde um pedaço
-                    s2Ate = true;  // S2 cresce
-                } else {
-                    return endGameHost("AZUL VENCEU!", roomRef);
-                }
+                if (s2.body.length > s1.body.length) { s1.body.pop(); s2Ate = true; } 
+                else { return endGameHost("AZUL VENCEU!"); }
             }
 
-            // Aplica Movimento S1
-            s1.body.unshift(h1);
-            if (!s1Ate) s1.body.pop();
-            
-            // Aplica Movimento S2
-            s2.body.unshift(h2);
-            if (!s2Ate) s2.body.pop();
+            s1.body.unshift(h1); if (!s1Ate) s1.body.pop();
+            s2.body.unshift(h2); if (!s2Ate) s2.body.pop();
 
-            // Atualiza Placar
             document.getElementById('score-p1').innerText = s1.body.length;
             document.getElementById('score-p2').innerText = s2.body.length;
         }
 
         function draw() {
-            // Limpa o canvas
-            ctx.fillStyle = 'rgba(15, 23, 42, 1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Desenha Linhas da Grid (Sutil)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.beginPath();
+            ctx.fillStyle = 'rgba(15, 23, 42, 1)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'; ctx.beginPath();
             for(let x=0; x<canvas.width; x+=GRID_SIZE) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
             for(let y=0; y<canvas.height; y+=GRID_SIZE) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
             ctx.stroke();
 
-            // Desenha Comida
-            ctx.fillStyle = '#facc15'; // Amarelo
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#facc15';
-            ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
-            ctx.shadowBlur = 0; // reseta
+            ctx.fillStyle = '#facc15'; ctx.shadowBlur = 15; ctx.shadowColor = '#facc15';
+            ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4); ctx.shadowBlur = 0; 
 
-            // Função para desenhar cobra
             function drawSnake(snake) {
                 snake.body.forEach((p, index) => {
                     ctx.fillStyle = (index === 0) ? snake.colorHead : snake.colorBody;
-                    ctx.shadowBlur = (index === 0) ? 10 : 0;
-                    ctx.shadowColor = snake.colorHead;
-                    
-                    // Desenha com um pequeno espaçamento para parecer blocos
-                    ctx.fillRect(p.x * GRID_SIZE + 1, p.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
-                    ctx.shadowBlur = 0;
+                    ctx.shadowBlur = (index === 0) ? 10 : 0; ctx.shadowColor = snake.colorHead;
+                    ctx.fillRect(p.x * GRID_SIZE + 1, p.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2); ctx.shadowBlur = 0;
                 });
             }
-
-            drawSnake(s1);
-            drawSnake(s2);
+            drawSnake(s1); drawSnake(s2);
         }
 
-        function endGameHost(msg, roomRef) {
+        function endGameHost(msg) {
             clearInterval(gameLoopId);
-            roomRef.update({ status: 'gameover' });
-            
+            globalRoomRef.update({ status: 'gameover' });
             document.getElementById('game-over-overlay').classList.remove('hidden');
-            let color = msg.includes("AZUL") ? "text-cyan-400" : (msg.includes("VERM") ? "text-rose-400" : "text-yellow-400");
+            let color = msg.includes("AZUL") ? "text-cyan-400" : (msg.includes("MÁQUINA") || msg.includes("VERM") ? "text-rose-400" : "text-yellow-400");
             document.getElementById('go-msg').innerHTML = `<span class="${color}">${msg}</span>`;
         }
 
-
         // ==========================================
-        // LÓGICA DO CELULAR (CONTROLE)
+        // LÓGICA DO CELULAR
         // ==========================================
-        
-        let myPlayerId = null;
-        let myRoomRef = null;
+        let myPlayerId = null; let myRoomRef = null;
 
         function initMobile(pin) {
             document.getElementById('mobile-view').classList.remove('hidden');
             document.getElementById('mobile-view').classList.add('flex');
-            
             myRoomRef = database.ref('fuga_salas/' + pin);
 
-            // Bloqueia botões de quem já entrou
-            myRoomRef.child('jogadores').on('value', snap => {
-                const data = snap.val() || {};
-                if(data[0]) {
-                    document.getElementById('btn-join-0').classList.add('opacity-30', 'pointer-events-none');
-                    document.getElementById('btn-join-0').innerText = 'EM USO';
-                }
-                if(data[1]) {
-                    document.getElementById('btn-join-1').classList.add('opacity-30', 'pointer-events-none');
-                    document.getElementById('btn-join-1').innerText = 'EM USO';
+            // Verifica modo de jogo para esconder botão da máquina
+            myRoomRef.child('mode').once('value', snap => {
+                if (snap.val() === 'pve') {
+                    document.getElementById('btn-join-1').classList.add('hidden');
                 }
             });
 
-            document.getElementById('btn-join-0').onclick = () => joinGame(0, 'AZUL', 'p1-theme');
-            document.getElementById('btn-join-1').onclick = () => joinGame(1, 'VERMELHA', 'p2-theme');
+            myRoomRef.child('jogadores').on('value', snap => {
+                const data = snap.val() || {};
+                if(data[0]) { document.getElementById('btn-join-0').classList.add('opacity-30', 'pointer-events-none'); document.getElementById('btn-join-0').innerText = 'EM USO'; }
+                if(data[1]) { document.getElementById('btn-join-1').classList.add('opacity-30', 'pointer-events-none'); document.getElementById('btn-join-1').innerText = 'EM USO'; }
+            });
         }
 
         function joinGame(id, name, themeClass) {
             myPlayerId = id;
             myRoomRef.child('jogadores/' + id).set({ active: true, direction: (id === 0 ? 'RIGHT' : 'LEFT') });
             
+            document.getElementById('mobile-join').classList.remove('flex');
             document.getElementById('mobile-join').classList.add('hidden');
+            
             const controller = document.getElementById('mobile-controller');
-            controller.classList.remove('hidden');
-            controller.classList.add('flex', themeClass);
+            controller.classList.remove('hidden'); controller.classList.add('flex', themeClass);
             
             document.getElementById('mobile-player-name').innerText = "COBRA " + name;
             if (id === 0) document.getElementById('mobile-player-name').classList.add('text-cyan-400');
             else document.getElementById('mobile-player-name').classList.add('text-rose-400');
 
-            // Escuta se o jogo acabou
             myRoomRef.child('status').on('value', snap => {
                 if (snap.val() === 'gameover') {
-                    controller.classList.add('hidden');
-                    document.getElementById('mobile-dead').classList.remove('hidden');
-                    document.getElementById('mobile-dead').classList.add('flex');
+                    controller.classList.add('hidden'); controller.classList.remove('flex');
+                    document.getElementById('mobile-dead').classList.remove('hidden'); document.getElementById('mobile-dead').classList.add('flex');
                     setTimeout(() => location.reload(), 8000); 
                 }
             });
         }
 
-        // Chamada pelos botões do HTML (onmousedown/ontouchstart)
         function sendDirection(dir) {
             if (myPlayerId !== null && myRoomRef !== null) {
-                // Vibe de feedback no celular
                 if(navigator.vibrate) navigator.vibrate(50);
                 myRoomRef.child('jogadores/' + myPlayerId).update({ direction: dir });
             }
