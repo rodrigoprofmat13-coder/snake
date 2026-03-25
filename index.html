@@ -28,7 +28,7 @@
         .dpad-btn {
             background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); border-radius: 20px;
             display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
-            box-shadow: 0 10px 0 rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.1); transition: all 0.1s;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.1); transition: transform 0.1s, background 0.1s;
         }
         .dpad-btn:active { transform: translateY(10px); box-shadow: 0 0px 0 rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.3); }
         .p1-theme .dpad-btn { border-color: #38bdf8; color: #38bdf8; } .p1-theme .dpad-btn:active { background: rgba(56, 189, 248, 0.2); }
@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        <div id="difficulty-selector" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-[55] flex items-center justify-center">
+        <div id="difficulty-selector" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-[55] items-center justify-center">
             <div class="bg-slate-900 border-2 border-rose-500 p-10 rounded-[2rem] shadow-[0_0_50px_rgba(244,63,94,0.3)] text-center max-w-2xl w-full">
                 <h1 class="title-font font-black text-5xl text-rose-400 mb-8">DIFICULDADE DA MÁQUINA</h1>
                 <div class="flex gap-4">
@@ -90,12 +90,13 @@
             </div>
         </div>
 
-        <div id="lobby-overlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center">
+        <div id="lobby-overlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-50 items-center justify-center">
             <div class="bg-slate-900 border-2 border-cyan-500 p-8 rounded-3xl shadow-[0_0_50px_rgba(6,182,212,0.3)] text-center max-w-2xl w-full flex flex-col items-center">
                 <h1 class="title-font font-black text-6xl text-cyan-400 mb-2">SALA: <span id="room-pin" class="text-white">...</span></h1>
                 <p id="lobby-msg" class="text-indigo-200 text-xl mb-6 font-bold uppercase tracking-widest">Escaneie para controlar sua cobra!</p>
                 
-                <div class="bg-white p-4 rounded-xl mb-8" id="qrcode"></div>
+                <div class="bg-white p-4 rounded-xl mb-4" id="qrcode"></div>
+                <p class="text-sm text-slate-400 mb-6">(Dica: Pressione "1" ou "2" no teclado para simular a entrada no PC)</p>
                 
                 <div class="flex gap-4 w-full justify-center mb-8" id="lobby-players">
                     <div id="lobby-p1" class="bg-slate-800 p-6 rounded-xl text-center text-slate-500 font-bold border-2 border-slate-700 border-dashed w-48">Aguardando P1...</div>
@@ -108,7 +109,7 @@
             </div>
         </div>
         
-        <div id="game-over-overlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center">
+        <div id="game-over-overlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-[100] items-center justify-center">
             <div class="bg-slate-900 border-4 border-yellow-400 p-10 rounded-3xl shadow-[0_0_50px_rgba(250,204,21,0.4)] text-center max-w-lg w-full" id="game-over-box">
                 <h2 class="title-font font-black text-6xl mb-6 text-yellow-400 animate-bounce">FIM DE JOGO!</h2>
                 <div id="go-msg" class="text-3xl mb-10 text-white font-bold title-font"></div>
@@ -198,11 +199,11 @@
         function initHost() {
             document.getElementById('host-view').classList.remove('hidden');
             document.getElementById('host-view').classList.add('flex');
-            // Mantém os modais de seleção visíveis e oculta canvas inicialmente
         }
 
         function showDifficulty() {
             document.getElementById('mode-selector').classList.add('hidden');
+            document.getElementById('mode-selector').classList.remove('flex');
             document.getElementById('difficulty-selector').classList.remove('hidden');
             document.getElementById('difficulty-selector').classList.add('flex');
         }
@@ -212,6 +213,7 @@
             botDifficulty = diff;
 
             document.getElementById('mode-selector').classList.add('hidden');
+            document.getElementById('mode-selector').classList.remove('flex');
             document.getElementById('difficulty-selector').classList.add('hidden');
             document.getElementById('difficulty-selector').classList.remove('flex');
             
@@ -227,15 +229,24 @@
             globalRoomRef = database.ref('fuga_salas/' + roomPin);
             globalRoomRef.set({ status: 'lobby', mode: gameMode, timestamp: Date.now() });
 
+            let p1Ready = false;
+            let p2Ready = false;
+
             if(gameMode === 'pve') {
                 document.getElementById('mode-display').innerText = `VS MÁQUINA (${botDifficulty.toUpperCase()})`;
                 document.getElementById('lobby-msg').innerText = "Você será a Cobra Azul. Escaneie!";
                 document.getElementById('lobby-p2').innerHTML = `<div class="text-4xl mb-2">🤖</div><div class="text-rose-400">Máquina Pronta</div>`;
                 document.getElementById('lobby-p2').classList.add('border-rose-500');
+                p2Ready = true; // Máquina sempre pronta
             }
 
-            let p1Ready = false;
-            let p2Ready = (gameMode === 'pve');
+            // ATALHOS DE TECLADO NO LOBBY PARA ENTRADA FÁCIL NO PC
+            document.addEventListener('keydown', (e) => {
+                if (globalRoomRef && document.getElementById('lobby-overlay').classList.contains('flex')) {
+                    if (e.key === '1' && !p1Ready) globalRoomRef.child('jogadores/0').set({ active: true, direction: 'RIGHT' });
+                    if (e.key === '2' && !p2Ready && gameMode === 'pvp') globalRoomRef.child('jogadores/1').set({ active: true, direction: 'LEFT' });
+                }
+            });
             
             globalRoomRef.child('jogadores').on('value', (snap) => {
                 const data = snap.val() || {};
@@ -261,6 +272,7 @@
 
             document.getElementById('btn-start-game').addEventListener('click', () => {
                 document.getElementById('lobby-overlay').classList.add('hidden');
+                document.getElementById('lobby-overlay').classList.remove('flex');
                 document.getElementById('game-canvas').classList.remove('hidden');
                 globalRoomRef.update({ status: 'playing' });
                 startSnakeGame();
@@ -275,13 +287,11 @@
         function updateBotAI() {
             if (gameMode !== 'pve') return;
 
-            // Chance de erro baseada na dificuldade (humaniza o bot)
             let mistakeChance = botDifficulty === 'facil' ? 0.4 : (botDifficulty === 'medio' ? 0.1 : 0);
-            if (Math.random() < mistakeChance) return; // Mantém a direção atual neste frame
+            if (Math.random() < mistakeChance) return;
 
-            let target = { x: food.x, y: food.y }; // Alvo padrão: Comida
+            let target = { x: food.x, y: food.y };
 
-            // Lógica Difícil: Caçar o jogador se a máquina for maior!
             if (botDifficulty === 'dificil' && s2.body.length > s1.body.length) {
                 target = { x: s1.body[0].x, y: s1.body[0].y }; 
             }
@@ -294,16 +304,13 @@
                 { dir: 'RIGHT', x: head.x + 1, y: head.y }
             ];
 
-            // Aplica Wrap-around nos movimentos possíveis para avaliação
             possibleMoves.forEach(m => {
                 if(m.x < 0) m.x = TILE_COUNT_X - 1; if(m.x >= TILE_COUNT_X) m.x = 0;
                 if(m.y < 0) m.y = TILE_COUNT_Y - 1; if(m.y >= TILE_COUNT_Y) m.y = 0;
             });
 
-            // Filtra movimentos suicidas (bater em si mesmo)
             possibleMoves = possibleMoves.filter(m => !s2.body.some(p => p.x === m.x && p.y === m.y));
             
-            // Filtra o "pescoço" (não pode voltar de ré)
             possibleMoves = possibleMoves.filter(m => {
                 if (s2.dir === 'UP' && m.dir === 'DOWN') return false;
                 if (s2.dir === 'DOWN' && m.dir === 'UP') return false;
@@ -313,7 +320,6 @@
             });
 
             if (possibleMoves.length > 0) {
-                // Ordena os movimentos pela menor distância até o alvo (considerando o wrap-around da tela)
                 possibleMoves.sort((a, b) => {
                     let distA = Math.min(Math.abs(a.x - target.x), TILE_COUNT_X - Math.abs(a.x - target.x)) +
                                 Math.min(Math.abs(a.y - target.y), TILE_COUNT_Y - Math.abs(a.y - target.y));
@@ -336,8 +342,23 @@
                 globalRoomRef.child('jogadores/1/direction').on('value', snap => { if(snap.val()) s2.nextDir = snap.val(); });
             }
 
+            // ATALHOS DE TECLADO PARA MOVIMENTO NO PC
+            document.addEventListener('keydown', (e) => {
+                if(e.key === 'w' || e.key === 'W') s1.nextDir = 'UP';
+                if(e.key === 's' || e.key === 'S') s1.nextDir = 'DOWN';
+                if(e.key === 'a' || e.key === 'A') s1.nextDir = 'LEFT';
+                if(e.key === 'd' || e.key === 'D') s1.nextDir = 'RIGHT';
+
+                if (gameMode === 'pvp') {
+                    if(e.key === 'ArrowUp') s2.nextDir = 'UP';
+                    if(e.key === 'ArrowDown') s2.nextDir = 'DOWN';
+                    if(e.key === 'ArrowLeft') s2.nextDir = 'LEFT';
+                    if(e.key === 'ArrowRight') s2.nextDir = 'RIGHT';
+                }
+            });
+
             gameLoopId = setInterval(() => {
-                updateBotAI(); // Atualiza a máquina antes de mover
+                updateBotAI(); 
                 update();
                 draw();
             }, 120);
@@ -426,7 +447,10 @@
         function endGameHost(msg) {
             clearInterval(gameLoopId);
             globalRoomRef.update({ status: 'gameover' });
+            
             document.getElementById('game-over-overlay').classList.remove('hidden');
+            document.getElementById('game-over-overlay').classList.add('flex');
+            
             let color = msg.includes("AZUL") ? "text-cyan-400" : (msg.includes("MÁQUINA") || msg.includes("VERM") ? "text-rose-400" : "text-yellow-400");
             document.getElementById('go-msg').innerHTML = `<span class="${color}">${msg}</span>`;
         }
@@ -441,7 +465,6 @@
             document.getElementById('mobile-view').classList.add('flex');
             myRoomRef = database.ref('fuga_salas/' + pin);
 
-            // Verifica modo de jogo para esconder botão da máquina
             myRoomRef.child('mode').once('value', snap => {
                 if (snap.val() === 'pve') {
                     document.getElementById('btn-join-1').classList.add('hidden');
